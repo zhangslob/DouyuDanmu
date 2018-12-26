@@ -75,24 +75,23 @@ class BaseWebsocket(object):
         print("Succeed logging in")
 
         while True:
-            data = self.client.recv(2048)  # bytes-like-objects
-            if not data:
-                print("NOT DATA")
-                return
-            for gid, nn in self.gift_msg.findall(data):
-                if gid.decode() in list(self.gift_list.keys())[:4]:
-                    gift_id = str(gid.decode())
-                    try:
+            try:
+                data = self.client.recv(2048)  # bytes-like-objects
+                if not data:
+                    print("NOT DATA")
+                for gid, nn in self.gift_msg.findall(data):
+                    if gid.decode() in list(self.gift_list.keys())[:4]:
+                        gift_id = str(gid.decode())
                         print("---[{}]送出----{}---".format(nn.decode(), self.gift_list[gift_id]))  # 礼物部分
                         gift = dict()
                         gift['nn'] = nn.decode()
                         gift['gift_id'] = self.gift_list[gift_id]
                         self.save_mongodb(gift)
 
-                    except Exception as e:
-                        print(e)
-                        print('-------礼物 Decode error---------')
-                        pass
+            except Exception as e:
+                print(e)
+                print('-------礼物 Decode error---------')
+                pass
             # for uid,nn,txt,level,bnn,bl in chatmsg.findall(data):
             # print(data)
             try:
@@ -107,7 +106,7 @@ class BaseWebsocket(object):
                     danmu['bnn'] = bnn.decode()
                     danmu['bl'] = bl.decode()
                     danmu['level'] = level.decode()
-                    danmu['nn'] = bnn.decode(errors='ignore')
+                    danmu['nn'] = nn.decode(errors='ignore')
                     danmu['txt'] = txt.decode(errors='ignore').strip()
                     self.save_mongodb(danmu)
 
