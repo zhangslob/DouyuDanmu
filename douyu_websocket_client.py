@@ -49,7 +49,10 @@ class BaseWebsocket(object):
         code = 689
         msg_head = int.to_bytes(data_length, 4, 'little') + \
                    int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
-        self.client.send(msg_head)
+        try:
+            self.client.send(msg_head)
+        except BrokenPipeError:
+            return
         sent = 0
         while sent < len(msg):
             tn = self.client.send(msg[sent:])
