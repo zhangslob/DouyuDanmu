@@ -68,15 +68,9 @@ class BaseWebsocket(object):
 
     def open(self):
         msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
-        try:
-            self.send_msg(msg)
-        except:
-            return
+        self.send_msg(msg)
         join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
-        try:
-            self.send_msg(join_room_msg)
-        except:
-            return
+        self.send_msg(join_room_msg)
         print("Succeed logging in")
 
         while True:
@@ -124,10 +118,7 @@ class BaseWebsocket(object):
         while True:
             # msg = 'type@=keeplive/tick@=' + str(int(time.time())) + '/\0'
             msg = 'type@=mrkl/'
-            try:
-                self.send_msg(msg)
-            except:
-                pass
+            self.send_msg(msg)
             time.sleep(40)
 
     def create_mongo_index(self):
