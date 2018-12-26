@@ -71,7 +71,6 @@ class BaseWebsocket(object):
         self.send_msg(join_room_msg)
         print("Succeed logging in")
 
-    def receive_message(self):
         while True:
             data = self.client.recv(2048)  # bytes-like-objects
             if not data:
@@ -143,12 +142,14 @@ class BaseWebsocket(object):
 
     def main(self):
         self.get_gift_list()
-        self.open()
-        self.receive_message()
+        t1 = threading.Thread(target=self.keep_live)
+        t1.setDaemon(True)
+        t1.start()
 
-        t = threading.Thread(target=self.keep_live)
-        t.setDaemon(True)
-        t.start()
+        while True:
+            t = threading.Thread(target=self.open)
+            t.start()
+            t.join()
 
 
 if __name__ == '__main__':
