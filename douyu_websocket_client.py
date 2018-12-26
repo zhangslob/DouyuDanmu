@@ -44,19 +44,22 @@ class BaseWebsocket(object):
         self.database = mongodb_client.get_database()
         self.db = self.database['{}_{}'.format(self.room_id, get_today())]
         self.db.create_index('unique_key', unique=True)
+        self._running = True
 
-    @retry(stop=(stop_after_delay(10) | stop_after_attempt(5)))
     def send_msg(self, msg_str):
-        msg = msg_str.encode('utf-8')
-        data_length = len(msg) + 8
-        code = 689
-        msg_head = int.to_bytes(data_length, 4, 'little') + \
-                   int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
-        self.client.send(msg_head)
-        sent = 0
-        while sent < len(msg):
-            tn = self.client.send(msg[sent:])
-            sent = sent + tn
+        try:
+            msg = msg_str.encode('utf-8')
+            data_length = len(msg) + 8
+            code = 689
+            msg_head = int.to_bytes(data_length, 4, 'little') + \
+                       int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
+            self.client.send(msg_head)
+            sent = 0
+            while sent < len(msg):
+                tn = self.client.send(msg[sent:])
+                sent = sent + tn
+        except:
+            self._running = False
 
     def get_gift_list(self):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
@@ -76,7 +79,7 @@ class BaseWebsocket(object):
         self.send_msg(join_room_msg)
         print("Succeed logging in")
 
-        while True:
+        while self._running:
             try:
                 data = self.client.recv(2048)  # bytes-like-objects
                 if not data:
