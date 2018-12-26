@@ -9,3 +9,5 @@ pytz == 2018.5
 
 # douyu_websocket_client.py: 18
 requests == 2.18.4
+
+tenacity

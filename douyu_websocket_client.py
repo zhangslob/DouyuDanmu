@@ -17,6 +17,8 @@ import hashlib
 import pymongo
 import requests
 import threading
+
+from tenacity import *
 from datetime import datetime
 
 mongodb_uri = 'mongodb://127.0.0.1:27017/douyu'
@@ -43,16 +45,14 @@ class BaseWebsocket(object):
         self.db = self.database['{}_{}'.format(self.room_id, get_today())]
         self.db.create_index('unique_key', unique=True)
 
+    @retry(stop=(stop_after_delay(10) | stop_after_attempt(5)))
     def send_msg(self, msg_str):
         msg = msg_str.encode('utf-8')
         data_length = len(msg) + 8
         code = 689
         msg_head = int.to_bytes(data_length, 4, 'little') + \
                    int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
-        try:
-            self.client.send(msg_head)
-        except BrokenPipeError:
-            return
+        self.client.send(msg_head)
         sent = 0
         while sent < len(msg):
             tn = self.client.send(msg[sent:])
