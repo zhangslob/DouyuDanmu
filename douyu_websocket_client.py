@@ -78,7 +78,7 @@ class BaseWebsocket(object):
             try:
                 data = self.client.recv(2048)  # bytes-like-objects
                 if not data:
-                    print("NOT DATA")
+                    pass
                 for gid, nn in self.gift_msg.findall(data):
                     if gid.decode() in list(self.gift_list.keys())[:4]:
                         gift_id = str(gid.decode())
