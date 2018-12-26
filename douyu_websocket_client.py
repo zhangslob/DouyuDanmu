@@ -47,19 +47,16 @@ class BaseWebsocket(object):
         self._running = True
 
     def send_msg(self, msg_str):
-        try:
-            msg = msg_str.encode('utf-8')
-            data_length = len(msg) + 8
-            code = 689
-            msg_head = int.to_bytes(data_length, 4, 'little') + \
-                       int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
-            self.client.send(msg_head)
-            sent = 0
-            while sent < len(msg):
-                tn = self.client.send(msg[sent:])
-                sent = sent + tn
-        except:
-            self._running = False
+        msg = msg_str.encode('utf-8')
+        data_length = len(msg) + 8
+        code = 689
+        msg_head = int.to_bytes(data_length, 4, 'little') + \
+                   int.to_bytes(data_length, 4, 'little') + int.to_bytes(code, 4, 'little')
+        self.client.send(msg_head)
+        sent = 0
+        while sent < len(msg):
+            tn = self.client.send(msg[sent:])
+            sent = sent + tn
 
     def get_gift_list(self):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
@@ -70,16 +67,19 @@ class BaseWebsocket(object):
             print(each['id'], each['name'])
 
     def open(self):
-        while self._running:
-            msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
-            try:
-                self.send_msg(msg)
-            except:
-                return
-            join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
+        msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
+        try:
+            self.send_msg(msg)
+        except:
+            return
+        join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
+        try:
             self.send_msg(join_room_msg)
-            print("Succeed logging in")
+        except:
+            return
+        print("Succeed logging in")
 
+        while True:
             try:
                 data = self.client.recv(2048)  # bytes-like-objects
                 if not data:
@@ -124,7 +124,10 @@ class BaseWebsocket(object):
         while True:
             # msg = 'type@=keeplive/tick@=' + str(int(time.time())) + '/\0'
             msg = 'type@=mrkl/'
-            self.send_msg(msg)
+            try:
+                self.send_msg(msg)
+            except:
+                pass
             time.sleep(40)
 
     def create_mongo_index(self):
