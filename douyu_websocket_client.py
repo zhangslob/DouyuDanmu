@@ -70,16 +70,16 @@ class BaseWebsocket(object):
             print(each['id'], each['name'])
 
     def open(self):
-        msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
-        try:
-            self.send_msg(msg)
-        except:
-            return
-        join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
-        self.send_msg(join_room_msg)
-        print("Succeed logging in")
-
         while self._running:
+            msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
+            try:
+                self.send_msg(msg)
+            except:
+                return
+            join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
+            self.send_msg(join_room_msg)
+            print("Succeed logging in")
+
             try:
                 data = self.client.recv(2048)  # bytes-like-objects
                 if not data:
