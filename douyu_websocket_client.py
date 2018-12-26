@@ -154,10 +154,10 @@ class BaseWebsocket(object):
         t1.start()
 
         while True:
+            self._running = True
             t = threading.Thread(target=self.open)
             t.start()
             t.join()
-            self._running = True
 
 
 if __name__ == '__main__':
