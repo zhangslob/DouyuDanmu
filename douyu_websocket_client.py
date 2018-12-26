@@ -18,7 +18,6 @@ import pymongo
 import requests
 import threading
 from datetime import datetime
-from concurrent import futures
 
 mongodb_uri = 'mongodb://127.0.0.1:27017/douyu'
 mongodb_client = pymongo.MongoClient(os.environ.get('MONGODB_URL', mongodb_uri))
@@ -155,7 +154,8 @@ class BaseWebsocket(object):
 
 
 if __name__ == '__main__':
-    with futures.ThreadPoolExecutor(max_workers=2) as executor:
-        for i in ['208114', '4537144']:
-            w = BaseWebsocket(i)
-            executor.submit(w.main())
+    room_list = ['208114', '4537144', '19223']
+    for i in room_list:
+        w = BaseWebsocket(i)
+        t = threading.Thread(target=w.main)
+        t.start()

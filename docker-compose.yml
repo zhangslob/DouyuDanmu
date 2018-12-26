@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+  douyu:
+    build: .
+    ports:
+      - '5000:5000'
+
+  mongodb:
+    links:
+      - douyu
+    image: mongo:3.4
+    volumes:
+      - ./db:/data/db
+    ports:
+      - '27017:27017'
