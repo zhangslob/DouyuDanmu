@@ -66,7 +66,10 @@ class BaseWebsocket(object):
 
     def open(self):
         msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
-        self.send_msg(msg)
+        try:
+            self.send_msg(msg)
+        except:
+            return
         join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
         self.send_msg(join_room_msg)
         print("Succeed logging in")
@@ -75,7 +78,7 @@ class BaseWebsocket(object):
             data = self.client.recv(2048)  # bytes-like-objects
             if not data:
                 print("NOT DATA")
-                break
+                return
             for gid, nn in self.gift_msg.findall(data):
                 if gid.decode() in list(self.gift_list.keys())[:4]:
                     gift_id = str(gid.decode())
