@@ -17,12 +17,14 @@ import hashlib
 import pymongo
 import requests
 import threading
+import logging
 
 from tenacity import *
 from datetime import datetime
 
 mongodb_uri = 'mongodb://127.0.0.1:27017/douyu'
 mongodb_client = pymongo.MongoClient(os.environ.get('MONGODB_URL', mongodb_uri))
+logging.basicConfig(level=logging.INFO)
 
 
 def get_today():
@@ -64,14 +66,14 @@ class BaseWebsocket(object):
         room_info = requests.get(url, headers=headers).json()['data']
         for each in room_info['gift']:
             self.gift_list[each['id']] = each['name']
-            print(each['id'], each['name'])
+            logging.info('{}, {}'.format(each['id'], each['name']))
 
     def open(self):
         msg = 'type@=loginreq/roomid@={}/\x00'.format(self.room_id)
         self.send_msg(msg)
         join_room_msg = 'type@=joingroup/rid@={}/gid@=-9999/\x00'.format(self.room_id)  # 加入房间分组消息
         self.send_msg(join_room_msg)
-        print("Succeed logging in")
+        logging.info("Succeed logging in")
 
         while True:
             try:
@@ -81,15 +83,15 @@ class BaseWebsocket(object):
                 for gid, nn in self.gift_msg.findall(data):
                     if gid.decode() in list(self.gift_list.keys())[:4]:
                         gift_id = str(gid.decode())
-                        print("---[{}]送出----{}---".format(nn.decode(), self.gift_list[gift_id]))  # 礼物部分
+                        logging.info("---[{}]送出----{}---".format(nn.decode(), self.gift_list[gift_id]))  # 礼物部分
                         gift = dict()
                         gift['nn'] = nn.decode()
                         gift['gift_id'] = self.gift_list[gift_id]
                         self.save_mongodb(gift)
 
             except Exception as e:
-                print(e)
-                print('-------礼物 Decode error---------')
+                logging.info(e)
+                logging.info('-------礼物 Decode error---------')
                 pass
             # for uid,nn,txt,level,bnn,bl in chatmsg.findall(data):
             # print(data)
@@ -98,7 +100,7 @@ class BaseWebsocket(object):
                     if bl.decode() == '0':
                         bnn = b'NONE'
 
-                    print("[{}({})][lv.{}][{}]: {} ".format(
+                        logging.info("[{}({})][lv.{}][{}]: {} ".format(
                         bnn.decode(), bl.decode(), level.decode(),
                         nn.decode(errors='ignore'), txt.decode(errors='ignore').strip()))
                     danmu = dict()
@@ -111,8 +113,8 @@ class BaseWebsocket(object):
 
                 time.sleep(0.05)  # continue
             except Exception as e:
-                print(e)
-                print('-------弹幕 Decode error---------')
+                logging.info(e)
+                logging.info('-------弹幕 Decode error---------')
 
     def keep_live(self):
         while True:
