@@ -24,7 +24,7 @@ from datetime import datetime
 
 mongodb_uri = 'mongodb://127.0.0.1:27017/douyu'
 mongodb_client = pymongo.MongoClient(os.environ.get('MONGODB_URL', mongodb_uri))
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 
 def get_today():
