@@ -40,6 +40,7 @@ def get_room_info(uid):
 def send_msg(cfd, msg):
     """
     发给斗鱼服务器所有的包都得加上消息头, 格式见斗鱼弹幕手册.
+    :param cfd:
     :param msg: str.
     """
     content = msg.encode()
@@ -48,7 +49,10 @@ def send_msg(cfd, msg):
     # 689代表客户端向服务器发送的数据, 690代表服务器向客户端发送的数据
     code = 689
     head = struct.pack('i', length) + struct.pack('i', length) + struct.pack('i', code)
-    cfd.sendall(head + content)
+    if isinstance(cfd, socket.socket):
+        cfd.sendall(head + content)
+    else:
+        print('wrong type: {}'.format(cfd))
 
 
 def init(uid):
@@ -105,9 +109,13 @@ def keep_live(cfd):
 
 def main(rid):
     cfd = init(rid)
-    t = Thread(target=keep_live, args=(rid,), daemon=True)
+    t = Thread(target=keep_live, args=(cfd,), daemon=True)
     t.start()
-    get_dm(cfd, rid)
+
+    t2 = Thread(target=get_dm, args=(cfd, rid))
+    t2.setDaemon(True)
+    t2.start()
+    t2.join()
 
 
 if __name__ == '__main__':
