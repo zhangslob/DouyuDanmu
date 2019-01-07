@@ -90,7 +90,8 @@ def get_dm(cfd, rid):
             # `error='replace'`, 把其替换成'?'
             print('[lv.{:0<2}][{}]: {}'.format(level.decode(), nn.decode(), txt.decode(errors='replace').strip()))
             db.insert_one(
-                {'level': level.decode(), 'name': nn.decode(), 'text': txt.decode(errors='replace').strip()}
+                {'level': level.decode(), 'name': nn.decode(), 'text': txt.decode(errors='replace').strip(),
+                 'time': get_now()}
             )
 
 
