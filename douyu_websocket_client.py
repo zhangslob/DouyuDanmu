@@ -78,6 +78,7 @@ class BaseWebsocket(object):
         while True:
             try:
                 data = self.client.recv(2048)  # bytes-like-objects
+                # print(str(data[12:], 'utf-8', 'ignore'))
                 if not data:
                     pass
                 for gid, nn in self.gift_msg.findall(data):
@@ -157,7 +158,7 @@ class BaseWebsocket(object):
 
 
 if __name__ == '__main__':
-    room_list = ['208114', '4537144', '19223', '606118']
+    room_list = ['208114', '4537144', '19223']
     for i in room_list:
         w = BaseWebsocket(i)
         t = threading.Thread(target=w.main)
