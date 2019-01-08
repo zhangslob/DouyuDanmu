@@ -114,7 +114,7 @@ def get_dm(cfd, rid, gift_list):
             )
 
         for gfid, name, gfcnt in gift_msg.findall(buffer):
-            print('{} 赠送 {} 个 {}'.format(name.decode(), gfcnt.decode(), gfid.decode()))
+            # print('{} 赠送 {} 个 {}'.format(name.decode(), gfcnt.decode(), gfid.decode()))
             db = mongodb_client.get_database()['{}_{}'.format(rid, get_today())]
             db.insert_one({
                 'name': name.decode(), 'type': 'gift',
