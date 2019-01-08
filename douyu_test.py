@@ -77,10 +77,21 @@ def init(uid):
     return cfd
 
 
-def get_dm(cfd, rid):
+def get_gift_list(room_id):
+    gift_list = dict()
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
+    url = 'http://open.douyucdn.cn/api/RoomApi/room/' + str(room_id)
+    room_info = requests.get(url, headers=headers).json()['data']
+    for each in room_info['gift']:
+        gift_list[each['id']] = each['name']
+        print('{}, {}'.format(each['id'], each['name']))
+    return gift_list
+
+
+def get_dm(cfd, rid, gift_list):
     """接受服务器消息, 并提取弹幕信息."""
-    pattern = re.compile(b'type@=chatmsg/.+?/nn@=(.+?)/txt@=(.+?)/.+?/level@=(.+?)/')
-    db = mongodb_client.get_database()['{}_{}'.format(rid, get_today())]
+    pattern = re.compile(b'type@=chatmsg/.+?/uid@=(.+?)/nn@=(.+?)/txt@=(.+?)/.+?/level@=(.+?)/.+?')
+    gift_msg = re.compile(b'type@=dgb/.+?/gfid@=(.+?)/.+?/nn@=(.+?)/.+?/gfcnt@=(.+?)/.+?')  # 礼物
     while True:
         # 接收的包有可能被分割, 需要把它们重新合并起来, 不然信息可能会缺失
         buffer = b''
@@ -89,14 +100,26 @@ def get_dm(cfd, rid):
             buffer += recv_data
             if recv_data.endswith(b'\x00'):
                 break
-        for nn, txt, level in pattern.findall(buffer):
+
+        for uid, nn, txt, level in pattern.findall(buffer):
             # 斗鱼有些表情会引发unicode编码错误
             # `error='replace'`, 把其替换成'?'
             print('[lv.{:0<2}][{}]: {}'.format(level.decode(), nn.decode(), txt.decode(errors='replace').strip()))
+            db = mongodb_client.get_database()['{}_{}'.format(rid, get_today())]
             db.insert_one(
-                {'level': level.decode(), 'name': nn.decode(), 'text': txt.decode(errors='replace').strip(),
-                 'time': get_now()}
+                {
+                    'uid': uid.decode(), 'type': 'danmu',
+                    'level': level.decode(), 'name': nn.decode(), 'text': txt.decode(errors='replace').strip(),
+                    'time': get_now()}
             )
+
+        for gfid, name, gfcnt in gift_msg.findall(buffer):
+            print('{} 赠送 {} 个 {}'.format(name.decode(), gfcnt.decode(), gfid.decode()))
+            db = mongodb_client.get_database()['{}_{}'.format(rid, get_today())]
+            db.insert_one({
+                'name': name.decode(), 'type': 'gift',
+                'gift_count': gfcnt.decode(), 'gift_id': gfid.decode(),
+                'time': get_now()})
 
 
 def keep_live(cfd):
@@ -109,15 +132,19 @@ def keep_live(cfd):
 
 def main(rid):
     cfd = init(rid)
+    gift_list = get_gift_list(rid)
     t = Thread(target=keep_live, args=(cfd,), daemon=True)
     t.start()
 
-    t2 = Thread(target=get_dm, args=(cfd, rid))
-    t2.setDaemon(True)
+    t2 = Thread(target=get_dm, args=(cfd, rid, gift_list))
     t2.start()
     t2.join()
 
 
 if __name__ == '__main__':
-    rid = '4537144'
-    main(rid)
+    # main('208114')
+    room_list = ['208114', '4537144']
+    for rid in room_list:
+        t = Thread(target=main, args=(rid,))
+        # t.setDaemon(True)
+        t.start()
