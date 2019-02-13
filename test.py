@@ -14,23 +14,23 @@ from datetime import datetime
 headers = {
     'origin': 'https://yuba.douyu.com',
     'accept-encoding': 'gzip, deflate, br',
-    'x-csrf-token': 'cqdGeZv8hSXmAiQw2MFJgsT2XaUrBPNH',
+    'x-csrf-token': 'DrsRAga4EcCyk3AboFM8ySQwhBL72mnJ',
     'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
-    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
     'content-type': 'application/x-www-form-urlencoded',
     'accept': '*/*',
     'referer': 'https://yuba.douyu.com/p/995429941549108124',
     'authority': 'yuba.douyu.com',
-    'cookie': 'dy_did=a17b4ab25c54986f6433ea9b00061501; acf_yb_did=a17b4ab25c54986f6433ea9b00061501; _ga=GA1.2.898345405.1546830910; smidV2=20181222155555157e437e6e4f57b560a3855ffdf9aace007e26097861818f0; Hm_lvt_e99aee90ec1b2106afe7ec3b199020a7=1546839422,1547555261,1548345770,1548650379; Hm_lvt_e0374aeb9ac41bee98043654e36ad504=1547555270,1548080434,1548322847,1548651214; acf_yb_auth=e5b9b363fb747df5ea9a2914105f77b008548619; acf_yb_new_uid=qy70WlRPJAXG; acf_yb_uid=39581553; Hm_lpvt_e99aee90ec1b2106afe7ec3b199020a7=1548686871; acf_yb_t=cqdGeZv8hSXmAiQw2MFJgsT2XaUrBPNH; _gid=GA1.2.334903085.1549116074; Hm_lpvt_e0374aeb9ac41bee98043654e36ad504=1549116219; _gat_gtag_UA_128072138_1=1',
+    'cookie': 'dy_did=a17b4ab25c54986f6433ea9b00061501; acf_yb_did=a17b4ab25c54986f6433ea9b00061501; _ga=GA1.2.898345405.1546830910; smidV2=20181222155555157e437e6e4f57b560a3855ffdf9aace007e26097861818f0; wan_auth37wan=d81fa0bf7cf74XaNC0DlLl9qwGKhjiinxQJgs4BM8suz%2F5EJHDn9xlPlxa9vS7xrKgaCHEs72LCyDZ2fYGCOS%2Fb4xf9ye5HjLkqjH3hVs2HipX7YfQ; Hm_lvt_e99aee90ec1b2106afe7ec3b199020a7=1547555261,1548345770,1548650379; Hm_lvt_e0374aeb9ac41bee98043654e36ad504=1548322847,1548651214,1549120614,1550039793; acf_yb_t=DrsRAga4EcCyk3AboFM8ySQwhBL72mnJ; acf_yb_auth=f5a7ccbb0ea2c3629b95014b1ac32e97ab923de3; acf_yb_new_uid=qy70WlRPJAXG; acf_yb_uid=39581553; _gid=GA1.2.822396080.1550039794; _gat_gtag_UA_128072138_1=1; Hm_lpvt_e0374aeb9ac41bee98043654e36ad504=1550039801',
 }
 
 params = (
-    ('timestamp', '0.8552529192809504'),
+    ('timestamp', '0.8287663724619401'),
 )
 
 data = {
   'repost': '0',
-  'content': '<p>1</p>',
+  'content': '<p>\u72D7\u5B98</p>',
   'pid': '995429941549108124',
   'vo_id': '',
   'tokensign': ''
